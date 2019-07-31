@@ -1,6 +1,8 @@
 import React from 'react';
 import './TwoBlock.css';
 
+const todo_key = "todo_";
+
 class TwoBlock extends React.Component {
     constructor(prop) {
         super(prop);
@@ -10,6 +12,7 @@ class TwoBlock extends React.Component {
         }
     }
 
+    todoNum = 1;
 
     handleKeyPress = e => {
         if (e.key === "Enter") {
@@ -54,7 +57,7 @@ class TwoBlock extends React.Component {
         let eachTodo = ""
         if (this.state.todos !== []) {
             eachTodo = this.state.todos.map((todo, index) => {
-                return <div className="each-todo">
+                return <div key={todo_key + this.todoNum++} className="each-todo">
                     <span className="delete" onClick={e => { this.deleteToDo(index) }
                     }>X</span>
                     {todo}
