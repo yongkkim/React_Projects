@@ -13,6 +13,7 @@
     "react-transition-group": "^4.2.1",
     "universal-cookie": "^4.0.2"
   },
+  "homepage": "https://yongkkim.github.io/React_Projects/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -39,6 +40,5 @@
   "devDependencies": {
     "gh-pages": "^2.1.0",
     "nodemon": "^1.19.1"
-  },
-  "homepage": "https://yongkkim.github.io/React_Projects/"
+  }
 }
