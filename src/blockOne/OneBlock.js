@@ -216,7 +216,7 @@ class OneBlock extends React.Component {
         let blankDays = [];
         for (let i = 0; i < this.firstDayOfMonth(); i++) {
             blankDays.push(
-                <td className="calendar-day empty">{""}</td>
+                <td key={"emtpy_" + i} className="calendar-day empty">{""}</td>
             );
         }
 
@@ -310,7 +310,7 @@ class OneBlock extends React.Component {
         });
 
         let daysinmonth = rows.map((d, i) => {
-            return <tr className="days cal-container">{d}</tr>;
+            return <tr key={"days_" + i} className="days cal-container">{d}</tr>;
         });
 
         return (
