@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './OneBlock.css';
 import moment from 'moment';
 import TwoBlock from '../blockTwo/TwoBlock';
+import ThreeBlock from '../blockThree/ThreeBlock';
 import Cookies from 'universal-cookie';
 import { CSSTransition } from "react-transition-group";
 
@@ -24,7 +25,8 @@ class OneBlock extends React.Component {
             todos: [],// props for a list of todos
             index: "", //index of object in daysWithToDo
             isToDo: false, // check if there are todos in a selected day
-            optionDiv: false
+            optionDiv: false,
+            todoDiv: false
         }
     }
 
@@ -202,6 +204,12 @@ class OneBlock extends React.Component {
         })
     }
 
+    openToDoList = () => {
+        this.setState({
+            todoDiv: true
+        })
+    }
+
     render() {
         // cookies.remove("todos", { path: "/" });
         cookies.set("todos", this.state.daysWithToDo, { path: '/', expires: new Date(Date.now() + 2592000) });
@@ -216,7 +224,7 @@ class OneBlock extends React.Component {
         let blankDays = [];
         for (let i = 0; i < this.firstDayOfMonth(); i++) {
             blankDays.push(
-                <td key={"emtpy_" + i} className="calendar-day empty">{""}</td>
+                <td key={"empty_" + i} className="calendar-day empty">{""}</td>
             );
         }
 
@@ -338,6 +346,8 @@ class OneBlock extends React.Component {
                         {daysinmonth}
                     </tbody>
                 </table>
+                <div className="all-todos" onClick={e => this.openToDoList()}>Check All To-Do</div>
+                {this.state.todoDiv && <ThreeBlock todoall={this.state.daysWithToDo} />}
             </div>
         );
     }
