@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './OneBlock.css';
 import moment from 'moment';
 import TwoBlock from '../blockTwo/TwoBlock';
 import ThreeBlock from '../blockThree/ThreeBlock';
 import Cookies from 'universal-cookie';
-import { CSSTransition } from "react-transition-group";
 
 const cookies = new Cookies();
 // const [count, setCount] = useState(0); react hooks
-
+// cookies.remove("todos");
 
 class OneBlock extends React.Component {
     constructor(prop) {
@@ -20,24 +19,34 @@ class OneBlock extends React.Component {
             toDoOpen: false, // boolean for opening todo div
             currentMonth: "",
             currentDayNum: "",
-            height: 0, // props for setting height in todo component
             daysWithToDo: cookies.get("todos") === undefined ? [] : cookies.get("todos"), // save all todo objects
             todos: [],// props for a list of todos
             index: "", //index of object in daysWithToDo
             isToDo: false, // check if there are todos in a selected day
             optionDiv: false,
-            todoDiv: false
+            todoDiv: false,
+            confirmDiv: false
+        }
+
+
+        if (cookies.get("todos") !== undefined) {
+            this.state.daysWithToDo.forEach(todo => {
+                todo.date = new moment(todo.date);
+            })
         }
     }
 
     weekdayshort = moment.weekdaysShort();
     year = moment().format("YYYY");
+    heightThree = 0;
+    styleTop = 0;
+    height = 0;
+    btn = 0;
 
     componentDidMount() {
-        const oneHeight = this.divElement.clientHeight - this.divele.clientHeight * 2;
-        this.setState({
-            height: oneHeight
-        });
+        this.styleTop = this.tdlist.clientTop;
+        this.height = this.divElement.clientHeight - this.divele.clientHeight * 2.5;
+        this.heightThree = this.divElement.clientHeight - this.divele.clientHeight;
     }
 
     currentYear = () => {
@@ -140,50 +149,65 @@ class OneBlock extends React.Component {
 
     openSchedule = () => {
         if (this.state.toDoOpen) {
-            return <TwoBlock todoinfo={this.state.todos} height={this.state.height} toDoDone={this.toDoDone} />
+            return <TwoBlock todoinfo={this.state.todos} height={this.height} toDoDone={this.toDoDone} compo={1} />
         } else {
             return null;
         }
     }
 
     toDoDone = (allToDos) => {
-        if (allToDos.length === 0) {
-            let changedToDo = Object.assign([], this.state.daysWithToDo)
-            changedToDo.splice(this.state.index, 1);
+        let todowithdiv = allToDos.map(todo => {
+            return todo
+        });
 
-            this.setState({
-                toDoOpen: false,
-                daysWithToDo: changedToDo
-            })
+        let changedToDo = Object.assign([], this.state.daysWithToDo);
 
-        } else {
-            let todowithdiv = allToDos.map(todo => {
-                return todo
-            });
+        if (this.state.isToDo) {
+            if (allToDos.length === 0) {
+                changedToDo.splice(this.state.index, 1);
 
-            let toDoObject = {
-                year: this.currentYear(),
-                month: this.currentMonth(),
-                day: this.state.currentDayNum,
-                todos: todowithdiv
+                this.setState({
+                    toDoOpen: false,
+                    daysWithToDo: changedToDo
+                })
+            } else {
+                changedToDo[this.state.index].todos = todowithdiv;
+
+                this.setState({
+                    toDoOpen: false,
+                    daysWithToDo: changedToDo
+                })
             }
+        } else {
+            if (allToDos.length !== 0) {
+                let changedToDo = Object.assign([], this.state.daysWithToDo);
+                changedToDo.push({
+                    date: new moment(this.currentYear() + "-" + moment().month(this.currentMonth()).format("MM") + "-" + this.state.currentDayNum),
+                    todos: todowithdiv
+                });
 
-            let changedToDo = Object.assign([], this.state.daysWithToDo)
-            changedToDo.forEach((ctd, i) => {
-                if (i === this.state.index) {
-                    ctd.toDoObject = toDoObject;
-                }
-            })
+                //sorting
+                changedToDo = this.sort(changedToDo);
 
-            this.setState({
-                toDoOpen: false,
-                daysWithToDo: this.state.isToDo ? changedToDo : this.state.daysWithToDo.concat({ toDoObject })
-            })
-
+                this.setState({
+                    toDoOpen: false,
+                    daysWithToDo: changedToDo
+                })
+            } else {
+                this.setState({
+                    toDoOpen: false
+                })
+            }
         }
     }
 
-    handleEnter = (id) => {
+    sort = (dateStrings) => {
+        const array = dateStrings;
+        const sortedArray = array.sort((a, b) => new moment(a.date).format('YYYYMMDD') - new moment(b.date).format('YYYYMMDD'))
+        return sortedArray
+    }
+
+    handleEnter = id => {
         let targetted = document.getElementById(id).lastElementChild;
         targetted.setAttribute("style", "display: flex;");
     }
@@ -194,13 +218,10 @@ class OneBlock extends React.Component {
     }
 
     quickDelete = tobeDeleted => {
-        console.log(tobeDeleted.nthObject);
-        let changedToDo = Object.assign([], this.state.daysWithToDo)
-        changedToDo.splice(tobeDeleted.nthObject, 1);
 
         this.setState({
-            toDoOpen: false,
-            daysWithToDo: changedToDo
+            confirmDiv: true,
+            index: tobeDeleted.nthObject
         })
     }
 
@@ -210,8 +231,63 @@ class OneBlock extends React.Component {
         })
     }
 
+    getRows(days, componentNum, blankdays = []) {
+        var totalSlots = blankdays !== [] ? [...blankdays, ...days] : [...days];
+        let itemNum = componentNum === 3 ? 4 : 7;
+
+        let rows = [];
+        let cells = [];
+
+        totalSlots.forEach((row, i) => {
+            if (i === 0) {
+                cells.push(row);
+            } else if (i % itemNum !== 0) {
+                cells.push(row); // if index not equal 7 that means not go to next week
+            } else {
+                rows.push(cells); // when reach next week we contain all td in last week to rows 
+                cells = []; // empty container 
+                cells.push(row); // in current loop we still push current row to new container
+            }
+            if (i === totalSlots.length - 1) { // when end loop we add remain date
+                rows.push(cells);
+            }
+        });
+
+        let daysinmonth = rows.map((d, i) => {
+            return <tr key={"days_" + i} className="days">{d}</tr>;
+        });
+
+        return daysinmonth;
+    }
+
+
+
+    doneManageAll = (finalTodo) => {
+        this.setState({
+            daysWithToDo: finalTodo,
+            todoDiv: false
+        })
+    }
+
+    confirmation = yesorno => {
+
+        if (yesorno) {
+            let changedToDo = Object.assign([], this.state.daysWithToDo)
+            changedToDo.splice(this.state.index, 1);
+
+            this.setState({
+                confirmDiv: false,
+                daysWithToDo: changedToDo
+            })
+        } else {
+            this.setState({
+                confirmDiv: false
+            })
+        }
+
+    }
+
     render() {
-        // cookies.remove("todos", { path: "/" });
         cookies.set("todos", this.state.daysWithToDo, { path: '/', expires: new Date(Date.now() + 2592000) });
         let weekdayshortname = this.weekdayshort.map(day => {
             return (
@@ -232,33 +308,30 @@ class OneBlock extends React.Component {
         for (let d = 1; d <= this.daysInMonth(); d++) {
             let withToDo = ""
             //let todoInfo = this.setToDoBgColor(d);
-
-            //body of function -> setToDoBgColor(d)
             let todoInfo = {};
             let todoList = [];
             let objNum;
             let found = false;
+
             if (this.state.daysWithToDo.length !== 0) {
                 this.state.daysWithToDo.forEach((obj, index) => {
-                    if (obj.toDoObject.year === this.currentYear() && obj.toDoObject.month === this.currentMonth() &&
-                        d === obj.toDoObject.day) {
+                    let selected = new moment(this.currentYear() + "-" + moment().month(this.currentMonth()).format("MM") + "-" + d);
+                    if (obj.date.isSame(selected)) {
                         found = true;
                         objNum = index;
-                        todoList = obj.toDoObject.todos.map(todo => {
+                        todoList = obj.todos.map(todo => {
                             return todo
                         });
                         todoInfo = {
                             todoList: todoList,
                             nthObject: objNum
                         }
-                        // console.log(todoInfo, index, d);
                     }
                     if (!found) {
                         todoInfo = {
                             todoList: todoList,
                             nthObject: -1
                         }
-                        // console.log(todoInfo, index, d);
                     }
                 })
             } else {
@@ -267,9 +340,8 @@ class OneBlock extends React.Component {
                     nthObject: -1
                 }
             }
-            //end
+
             if (todoList.length !== 0) {
-                // console.log(todoInfo, d);
                 withToDo = <td key={d} id={d} className={"calendar-day has-todo"} onClick={e => this.setToDo(d, todoInfo, true)}
                     onMouseEnter={e => {
                         let elementID = e.currentTarget.id;
@@ -300,43 +372,33 @@ class OneBlock extends React.Component {
             daysInMonth.push(withToDo);
         }
 
-        var totalSlots = [...blankDays, ...daysInMonth];
-        let rows = [];
-        let cells = [];
-
-        totalSlots.forEach((row, i) => {
-            if (i % 7 !== 0) {
-                cells.push(row); // if index not equal 7 that means not go to next week
-            } else {
-                rows.push(cells); // when reach next week we contain all td in last week to rows 
-                cells = []; // empty container 
-                cells.push(row); // in current loop we still push current row to new container
-            }
-            if (i === totalSlots.length - 1) { // when end loop we add remain date
-                rows.push(cells);
-            }
-        });
-
-        let daysinmonth = rows.map((d, i) => {
-            return <tr key={"days_" + i} className="days cal-container">{d}</tr>;
-        });
+        let daysinmonth = this.getRows(daysInMonth, 1, blankDays);
 
         return (
             <div ref={(divElement) => this.divElement = divElement}>
                 {this.openSchedule()}
-                <div className="calendar-year bg-primary" onClick={e => this.setYear()}>
+                <div className={this.state.confirmDiv || this.state.todoDiv || this.state.monthDiv ? "calendar-year cal-blur bg-primary" : "calendar-year bg-primary"} onClick={e => this.setYear()}>
                     <p>{this.currentYear()}</p>
                 </div>
-                {this.state.yearDiv &&
-                    <div className="year-selection">{this.yearList()}</div>
-                }
-                <div ref={(divele) => this.divele = divele} className="calendar-month" onClick={e => this.setMonth()}>
+
+                {this.state.yearDiv && <div className="year-selection">{this.yearList()}</div>}
+
+                <div ref={(divele) => this.divele = divele}
+                    className={this.state.confirmDiv || this.state.todoDiv ? "calendar-month cal-blur" : "calendar-month"} onClick={e => this.setMonth()}>
                     <p>{this.currentMonth().toLocaleUpperCase()}</p>
                 </div>
-                {this.state.monthDiv &&
-                    <div className="month-selection">{this.monthList()}</div>
+
+                {this.state.monthDiv && <div className="month-selection">{this.monthList()}</div>}
+                {this.state.confirmDiv &&
+                    <div className="confirm-container">
+                        Are you sure you delete this?
+                                <div className="yesorno-container">
+                            <button className="yes btn-success" onClick={e => this.confirmation(true)}>Yes</button>
+                            <button className="no btn-danger" onClick={e => this.confirmation(false)}>No</button>
+                        </div>
+                    </div>
                 }
-                <table className={this.state.monthDiv || this.state.yearDiv ? "calendar cal-blur" : "calendar"}>
+                <table className={this.state.confirmDiv || this.state.monthDiv || this.state.yearDiv || this.state.todoDiv ? "calendar cal-blur" : "calendar"}>
                     <thead>
                         <tr className="weekday cal-container">
                             {weekdayshortname}
@@ -346,8 +408,14 @@ class OneBlock extends React.Component {
                         {daysinmonth}
                     </tbody>
                 </table>
-                <div className="all-todos" onClick={e => this.openToDoList()}>Check All To-Do</div>
-                {this.state.todoDiv && <ThreeBlock todoall={this.state.daysWithToDo} />}
+                <div className={this.state.confirmDiv || this.state.todoDiv || this.state.monthDiv || this.state.yearDiv ? "all-todos cal-blur" : "all-todos"}
+                    ref={(tdlist) => this.tdlist = tdlist} onClick={e => this.openToDoList()}>Check All To-Dos</div>
+                {this.state.todoDiv &&
+                    <ThreeBlock
+                        getRows={this.getRows} sort={this.sort} top={this.styleTop} height={this.heightThree}
+                        todoall={this.state.daysWithToDo} date={this.state.dateObject} twoblockheight={this.height}
+                        mouseLeave={this.handleLeave} done={this.doneManageAll} />
+                }
             </div>
         );
     }

@@ -1,6 +1,57 @@
+/* transition for undo description */
+.undoDesc-appear {
+  opacity: 0.01;
+}
+
+.undoDesc-appear.undoDesc-appear-active {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+.undoDesc-enter {
+  opacity: 1;
+}
+
+.undoDesc-enter.undoDesc-enter-active {
+    opacity: 1;
+    transition: opacity 1000ms ease-in;
+}
+
+.undoDesc-leave {
+  opacity: 1;
+}
+
+.undoDesc-leave.undoDesc-leave-active {
+  opacity: 0.01;
+  transition: opacity 1000ms ease-in;
+}
+
+#undo-btn-info{
+    position: absolute;
+    padding: 10px;
+    right: 0px;
+    bottom: 100px;
+    width: 35%;
+    font-size: 20px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: white;
+    border-radius: 10px;
+}
+/* .btn-danger{
+    width: 90%;
+    display: block;
+    margin: 5px auto;
+} */
+.disappear{
+    display: none;
+}
+
+/* end */
+
 .schedule-container{
     position: absolute;
     margin: 0 auto;
+    margin-top: 60px;
     left: 0;
     right: 0;
     z-index: 10;
@@ -8,6 +59,13 @@
     background-color: white;
     width: 70%;
     font-family: fantasy;
+}
+
+.zero-top{
+    top: 0;
+}
+.zero-bottom{
+    bottom: 0;
 }
 
 .container-title{
@@ -26,7 +84,7 @@
     display: flex;
 }
 
-.clear, .done{
+.clear, .done, .undo{
     flex: 1 1;
     text-align: center;
     height: 50px;
@@ -39,12 +97,13 @@
     letter-spacing: 5px;
 }
 
-.clear:hover{
-    cursor: pointer
+.undo{
+    background-color: #b47dac;
 }
 
-.done:hover{
-    cursor: pointer;
+
+.clear:hover, .done:hover, .undo:hover{
+    cursor: pointer
 }
 
 .todos{

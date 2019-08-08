@@ -1,0 +1,117 @@
+.three-container{
+    position: relative;
+    top:0;
+}
+
+.list-of-todos{
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom: 29px;
+    z-index: 9;
+    width: 40%; 
+    background-color: white;
+    overflow-y: scroll;
+    margin-bottom: 24px;
+}
+
+.confirm-active{
+    overflow-y: hidden;
+}
+
+.list-name, .list-item-title{
+    width: 100%;
+    text-align: center;
+    margin: 0 auto;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: fantasy;
+    color: white;
+    letter-spacing: 4px;
+    background-color: #b47dac;
+}
+
+.list-item-title{
+    width: 70%;
+    font-size: 25px;
+    letter-spacing: 3px;
+    background-color: #ff5e69;
+}
+
+.list-todos-container{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.item{
+    height: 50px;
+}
+
+
+.calendar-todos{
+    margin: 0 auto;
+    width: 70%;
+    text-align: center;
+    font-family: fantasy;
+    border-spacing: 10px;
+    border-collapse: separate;
+}
+
+.calendar-todos:last-child{
+    margin-bottom: 20px;
+}
+
+.calendar-todos td{
+    border-bottom: 1px solid #007bff!important;
+}
+
+.four-rows{
+    width: calc(100%/4);
+}
+
+.option-container{
+    display: none;
+}
+
+.for-three{
+    position: absolute;
+}
+
+.for-three-confirm{
+    width: 20%;
+    bottom: 250px;
+    z-index: 20;
+}
+
+.for-three-cal-blur{
+    background-color: unset;
+}
+
+.delete-todo:hover, .view-todo:hover{
+    cursor: pointer;
+}
+
+.doneManage{
+    position: absolute;
+    width: 40%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 52px;
+    margin: 0 auto;
+    background-color: #b47dac;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: fantasy;
+    color: white;
+    letter-spacing: 4px;
+}
+.doneManage:hover{
+    cursor: pointer;
+}
+
+.confirm-container{
+    position: absolute;
+}
