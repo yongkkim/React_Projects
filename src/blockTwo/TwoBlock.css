@@ -128,9 +128,28 @@
     display: block;
     width: 50%;
     height: 50px;
-    margin: 0 auto;
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.input-group{
+    justify-content: center;
+}
+
+.add{
+    display: block;
+    float: right;
+    padding-top: 10px;
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+.add:hover{
+    cursor: pointer;
 }
 
 hr{

@@ -23,6 +23,10 @@ class TwoBlock extends React.Component {
         }
     };
 
+    handleEnter = () => {
+        this.handleCreate();
+    }
+
     handleCreate = () => {
         if (this.state.input === "") {
             alert("Cannot be empty");
@@ -108,8 +112,11 @@ class TwoBlock extends React.Component {
                     To-Do List
                 </div>
                 <div className="todos" style={{ height: this.props.height }}>
-                    <input className="todoform" placeholder="Enter your task" value={this.state.input}
-                        onChange={e => this.handleChange(e)} onKeyPress={e => this.handleKeyPress(e)} />
+                    <div className="input-group">
+                        <input className="todoform" placeholder="Enter your task" value={this.state.input}
+                            onChange={e => this.handleChange(e)} onKeyPress={e => this.handleKeyPress(e)} />
+                        <div className="add btn-danger" onClick={e => this.handleEnter()}>ENTER</div>
+                    </div>
                     <hr className="text-primary" />
                     {eachTodo}
                 </div>
